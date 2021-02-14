@@ -17,7 +17,7 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <style>
+               <style>
             body {
   margin: 0;
   background: #fbc02d;
@@ -145,49 +145,80 @@ h1 {
   #inputContainer {padding-left: 0; margin-right:20px}
 }
         </style>
+    </style>
 
-        
+    
     <div id="progress"></div>
-
     <div class="center">
     <div id="register"> 
-        
+        <p style="margin-left: 30px;">Powered by CheckBook.</p>
         <i id="previousButton" class="ion-android-arrow-back"></i> 
         <i id="forwardButton" class="ion-android-arrow-forward"></i>
         
         <div id="inputContainer">
+        
         <input id="inputField" required multiple />
         <label id="inputLabel"></label>
         <div id="inputProgress"></div>
         </div>
-        
     </div>
     </div>
 
-
-
-        <script src="" async defer>
+        <script>
 
  var questions = [
   {question:"What's your first name?"},
   {question:"What's your last name?"},
   {question:"What's your email?", pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/},
-  {question:"Create your password", type: "password"}
+  {question:"How much do you want to donate?", pattern: /\d\d?\d?\d?/},
+  {question:"Message?"}
 ]
 
 /*
   do something after the questions have been answered
 */
 var onComplete = function() {
+    const name = questions[0].answer + " " + questions[1].answer 
+    const email = questions[2].answer
+    const amount = questions[3].answer
+    const description = questions[4].answer
 
-    var h1 = document.createElement('h1')
-    h1.appendChild(document.createTextNode('Thanks ' + questions[0].answer + ' for checking this pen out!'))
-    setTimeout(function() {
-      register.parentElement.appendChild(h1)
-      setTimeout(function() { h1.style.opacity = 1 }, 50)
-    }, 1000)
+    let details = {
+        recipient: email, 
+        name: name, 
+        amount: amount, 
+        description: description
+    }
 
+    var formBody = [];
+    for (var property in details) {
+    var encodedKey = encodeURIComponent(property);
+    var encodedValue = encodeURIComponent(details[property]);
+    formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+
+    fetch("/api/checkbook/requestpayment", {
+        method: "POST", 
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: formBody
+    }).then(() => {
+        var h1 = document.createElement('h1')
+        h1.appendChild(document.createTextNode('Thanks ' + questions[0].answer + ' for donating!'))
+        setTimeout(function() {
+            register.parentElement.appendChild(h1)
+            setTimeout(function() { h1.style.opacity = 1 }, 50)
+        }, 1000)
+    }).catch((err) => {
+        alert(err)
+    })
 }
+
+
+
 
 ;(function(questions, onComplete) {
 
