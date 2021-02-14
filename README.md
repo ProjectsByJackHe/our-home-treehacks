@@ -68,7 +68,8 @@ We wish to refine some front end user interface components, improve the UX/UI ex
 
 ## "Try it out" links
 
-https://github.com/ProjectsByJackHe/our-home-treehacks
-https://treehacksdemo.web.app/
+Github: https://github.com/ProjectsByJackHe/our-home-treehacks
+
+Firebase server: https://treehacksdemo.web.app/
 
 
