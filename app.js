@@ -39,7 +39,8 @@ app.use((req, res, next) => {
 /**
  * CheckBook API app routes.
  */
-app.post("/api/checkbook/sendcheck", checkBookController.sendcheck)
+app.post("/api/checkbook/sendcheck", checkBookController.sendcheck);
+app.post("/api/checkbook/requestpayment", checkBookController.requestPayment);
 
 
 /**
