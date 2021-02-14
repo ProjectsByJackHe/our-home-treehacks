@@ -14,7 +14,7 @@
       width: 100%;
     }
   </style>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/dark-green/main.css">
   <script src="https://js.arcgis.com/4.18/"></script>
 
   <script>
@@ -28,7 +28,7 @@
     ], function (esriConfig, Map, MapView, Locator, Graphic) {
 
 
-      esriConfig.apiKey = "AAPKc40e6ac02c5a4041a72d54cfd9bc9737zniAYljggDnONX8-ZD7j_9hLF3E330rOS1CXWuWYc5EghTznq7XiEzX05YXaovzG";
+      esriConfig.apiKey = "AAPKed8b2170e9c84d509cd428a7a9319506eimdIlWFzsNScBSvYziB_qFk-xDNly9lCTvyWMUF7fW_WKI5fnG27vCB7M4Vy9bq";
 
       const map = new Map({
         basemap: "arcgis-navigation"
@@ -41,7 +41,22 @@
         zoom: 13
       });
 
-      const places = ["Choose a place type...", "Parks and Outdoors", "Coffee shop", "Gas station", "Food", "Hotel", "Church"];
+      view.watch("widthBreakpoint", function(breakpoint) {
+        switch (breakpoint) {
+          case "xsmall":
+            updateView(true);
+            break;
+          case "small":
+          case "medium":
+          case "large":
+          case "xlarge":
+            updateView(false);
+            break;
+          default:
+        }
+      });
+
+      const places = ["Choose a place type...", "Park", "Food", "Hotel", "Church", "Charity", "Hospital", "Shelter", "Refugee"];
 
       const select = document.createElement("select", "");
       select.setAttribute("class", "esri-widget esri-select");
@@ -83,14 +98,15 @@
                     color: "#21ce99",
                     size: "12px",
                     outline: {
-                      color: "#ffffff",
+                      color: "#000000",
                       width: "2px"
                     }
                   },
 
                   popupTemplate: {
                     title: "{PlaceName}", // Data attribute names
-                    content: "{Place_addr}"
+                    content: "{Place_addr}" + "</br>" + "</br>" + "<a href='https://www.google.com/'> Donate via Checkbook</a>"
+                    // donate: "Donate"
                   }
                 }));
             });
