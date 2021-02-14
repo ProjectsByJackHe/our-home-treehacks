@@ -1,5 +1,7 @@
 # OUR HOME 
 
+![alt text](https://github.com/ProjectsByJackHe/our-home-treehacks/blob/master/screenshots/logo.png)
+
 - @Protocol Flutter Chat App 
 - CheckBook API for easy payments / invoices 
 - ArcGIS map to visualize Charity locations
