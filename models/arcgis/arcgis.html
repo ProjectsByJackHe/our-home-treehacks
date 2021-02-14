@@ -1,10 +1,9 @@
 <html>
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>ArcGIS API for JavaScript Tutorials: Display a map</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS API for JavaScript Tutorials: Find places</title>
   <style>
     html,
     body,
@@ -15,24 +14,101 @@
       width: 100%;
     }
   </style>
-
   <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css">
   <script src="https://js.arcgis.com/4.18/"></script>
 
   <script>
-    require(["esri/config", "esri/Map", "esri/views/MapView"], function (esriConfig, Map, MapView) {
 
-      esriConfig.apiKey = "Your-api-key";
+    require([
+      "esri/config",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/tasks/Locator",
+      "esri/Graphic"
+    ], function (esriConfig, Map, MapView, Locator, Graphic) {
+
+
+      esriConfig.apiKey = "AAPKc40e6ac02c5a4041a72d54cfd9bc9737zniAYljggDnONX8-ZD7j_9hLF3E330rOS1CXWuWYc5EghTznq7XiEzX05YXaovzG";
 
       const map = new Map({
-        basemap: "arcgis-topographic" // Basemap layer service
+        basemap: "arcgis-navigation"
       });
 
       const view = new MapView({
+        container: "viewDiv",
         map: map,
-        center: [-118.805, 34.027], // Longitude, latitude
-        zoom: 13, // Zoom level
-        container: "viewDiv" // Div element
+        center: [-122.4194, 37.7749], //Longitude, latitude
+        zoom: 13
+      });
+
+      const places = ["Choose a place type...", "Parks and Outdoors", "Coffee shop", "Gas station", "Food", "Hotel", "Church"];
+
+      const select = document.createElement("select", "");
+      select.setAttribute("class", "esri-widget esri-select");
+      select.setAttribute("style", "width: 175px; font-family: 'Avenir Next W00'; font-size: 1em");
+
+      places.forEach(function (p) {
+        const option = document.createElement("option");
+        option.value = p;
+        option.innerHTML = p;
+        select.appendChild(option);
+      });
+
+      view.ui.add(select, "top-right");
+
+      const locator = new Locator({
+        url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+      });
+
+      // Find places and add them to the map
+      function findPlaces(category, pt) {
+        locator.addressToLocations({
+          location: pt,
+          categories: [category],
+          maxLocations: 25,
+          outFields: ["Place_addr", "PlaceName"]
+        })
+
+          .then(function (results) {
+            view.popup.close();
+            view.graphics.removeAll();
+
+            results.forEach(function (result) {
+              view.graphics.add(
+                new Graphic({
+                  attributes: result.attributes,  // Data attributes returned
+                  geometry: result.location, // Point returned
+                  symbol: {
+                    type: "simple-marker",
+                    color: "#21ce99",
+                    size: "12px",
+                    outline: {
+                      color: "#ffffff",
+                      width: "2px"
+                    }
+                  },
+
+                  popupTemplate: {
+                    title: "{PlaceName}", // Data attribute names
+                    content: "{Place_addr}"
+                  }
+                }));
+            });
+
+          });
+
+      }
+
+      // Search for places in center of map
+      view.watch("stationary", function (val) {
+        if (val) {
+          findPlaces(select.value, view.center);
+        }
+      });
+
+      // Listen for category changes and find places
+      select.addEventListener('change', function (event) {
+        findPlaces(event.target.value, view.center);
       });
 
     });
