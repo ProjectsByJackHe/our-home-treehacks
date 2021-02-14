@@ -43,6 +43,9 @@ app.use((req, res, next) => {
 
 app.post("/api/checkbook/sendcheck", checkBookController.sendcheck);
 app.post("/api/checkbook/requestpayment", checkBookController.requestPayment);
+app.get("/checkbook/payment", (req, res, next) => {
+  res.sendFile(__dirname + "/onboard/index.html")
+})
 
 app.use((req, res, next) => {
   res.sendFile(__dirname + "/arcgis/arcgis.html");
